@@ -23,7 +23,11 @@ public:
     double getCusto() { return custo; }
 
     bool cobreLinha(uint8_t linha) {
-        return (linhas.find(linha) != linhas.cend());
+        return linhas.find(linha) != linhas.end();
+    }
+
+    const LinhaSet& getLinhas() {
+        return linhas;
     }
 
     void globalizar() {
@@ -36,7 +40,7 @@ public:
     }
 
     static ColunaArray& getColunas() { 
-        static Coluna::ColunaArray colunas;
+        static ColunaArray colunas;
         return colunas;
     }
     
@@ -56,10 +60,5 @@ private:
      * Conjunto de linhas que a coluna cobre
      */
     LinhaSet linhas;
-
-    /**
-     * Lista persistente de colunas
-     */
-    //static ColunaArray colunas;
 };
 

@@ -1,4 +1,4 @@
-NHAS      50
+LINHAS      50
 COLUNAS     300
 DADOS
     1   61.41      6   14   46

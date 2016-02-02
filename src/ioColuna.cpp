@@ -2,7 +2,11 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include "globals.h"
 #include "coluna.h"
+
+uint8_t NUMERO_LINHAS;
+uint16_t NUMERO_COLUNAS;
 
 int readLinhas(std::string filename)
 {
@@ -10,16 +14,17 @@ int readLinhas(std::string filename)
     std::ifstream fin;
     fin.open(filename);
 
-
-
     //ler numero de linhas
     int num_linhas;
     fin >> tmp >> num_linhas;
 
+    NUMERO_LINHAS = (uint8_t)num_linhas;
     //numero de colunas
     int num_colunas;
     fin >> tmp >> num_colunas;
 
+
+    NUMERO_COLUNAS = (uint16_t)num_colunas;
     //pula
     fin >> tmp;
 
@@ -53,7 +58,9 @@ int main(int argv, char* argc[])
         return 0;
     }
 
-    std::cout << readLinhas(argc[1]) << std::endl;
+
+    readLinhas(argc[1]);
+    std::cout << (int)NUMERO_LINHAS << " " << (int)NUMERO_COLUNAS << std::endl;
 
     return 0;
 }
