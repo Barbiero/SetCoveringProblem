@@ -82,4 +82,4 @@ Coluna::getColunasCobrindoLinha(uint8_t linha)
     }
 
     return conj_cols;
-}
+}git

@@ -6,22 +6,23 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="">
-				<Option output="bin/SetCoveringProblem" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/" />
-				<Option type="1" />
+			<Target title="default">
+				<Option output="SetCoveringProblem" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
 				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O2" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Weffc++" />
+			<Add option="-Wextra" />
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 		</Compiler>
+		<Unit filename="src/coluna.cpp" />
+		<Unit filename="src/coluna.h" />
+		<Unit filename="src/globals.h" />
+		<Unit filename="src/ioColuna.cpp" />
+		<Unit filename="src/solucao.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
