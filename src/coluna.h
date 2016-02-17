@@ -7,8 +7,7 @@
 #include <iostream>
 
 typedef std::unordered_set<uint8_t> LinhaSet;
-
-
+typedef std::multimap<uint8_t, uint16_t> CoberturaLinhas;
 
 class Coluna
 {
@@ -16,34 +15,24 @@ class Coluna
 public:
     typedef std::map<uint16_t, Coluna*> ColunaArray;
 
-    Coluna(uint16_t _id, double _custo, LinhaSet _linhas) :
-        id(_id), custo(_custo), linhas(_linhas) {};
-    
-    uint16_t getId() { return id; }
-    double getCusto() { return custo; }
+    Coluna(uint16_t _id, double _custo, LinhaSet _linhas);
+    uint16_t getId();
+    double getCusto();
 
-    bool cobreLinha(uint8_t linha) {
-        return linhas.find(linha) != linhas.end();
-    }
+    bool cobreLinha(uint8_t linha);
 
-    const LinhaSet& getLinhas() {
-        return linhas;
-    }
+    const LinhaSet& getLinhas();
 
-    void globalizar() {
-        Coluna::setColuna(this);
-    }
+    void globalizar();
 
-    static void setColuna(Coluna* coluna){
-        getColunas().insert(
-            std::pair<uint16_t, Coluna*>(coluna->getId(), coluna));
-    }
+    static void setColuna(Coluna* coluna);
 
-    static ColunaArray& getColunas() { 
-        static ColunaArray colunas;
-        return colunas;
-    }
-    
+    static ColunaArray& getColunas();
+
+    static CoberturaLinhas& getCoberturaLinhas();
+
+    static std::set<Coluna*> Coluna::getColunasCobrindoLinha(uint8_t linha);
+
 private:
 
     /**

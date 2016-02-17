@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1454417193 source:/home/badashi/workspace/MOA/SetCoveringProblem/src/ioColuna.cpp
+	<fstream>
+	<string>
+	<sstream>
+	<iostream>
+	"globals.h"
+	"coluna.h"
+
+1454416792 /home/badashi/workspace/MOA/SetCoveringProblem/src/globals.h
+	<cstdint>
+
+1454416179 /home/badashi/workspace/MOA/SetCoveringProblem/src/coluna.h
+	<cstdint>
+	<unordered_set>
+	<map>
+	<iostream>
+

@@ -25,6 +25,21 @@
 #include "globals.h"
 #include "coluna.h"
 
+struct coluna_compare {
+    bool operator() (const uint8_t& lhs, const uint8_t& rhs)
+    {
+        assert(lhs <= NUMERO_COLUNAS);
+        assert(rhs <= NUMERO_COLUNAS);
+
+        Coluna* left = Coluna::getColunas()[lhs];
+        Coluna* right = Coluna::getColunas()[rhs];
+
+        return (right->getCusto() - left->getCusto());
+    }
+}
+
+typedef std::set<uint16_t, coluna_compare> ColunaSet
+
 class Solucao
 {
 public:
@@ -38,6 +53,11 @@ public:
 private:
 
     /**
+     * marca se uma solucao é valida
+     */
+    bool isValid;
+
+    /**
      * marca quantas colunas estao cobrindo uma certa linha
      */
     std::vector<uint8_t> coberturaLinhas;
@@ -46,27 +66,21 @@ private:
      * marca quais colunas fazem parte da solucao
      * marca apenas o ID das colunas
      */
-    std::unordered_set<uint8_t> colunas;
+    ColunaSet colunas;
 
-    /**
-     * marca se uma solucao é valida
-     */
-    bool isValid;
 };
 
-Solucao::Solucao()
-{
-    isValid = false;
-
-    coberturaLinhas = std::vector<uint8_t>(NUMERO_LINHAS);
-    colunas = std::unordered_set<uint8_t>();
-}
+Solucao::Solucao() :
+    isValid(false), coberturaLinhas(std::vector<uint8_t>(NUMERO_LINHAS)),
+    colunas(ColunaSet())
+{}
 
 /**
  * verifica a validade de uma solucao e retorna true se ela for valida
  * @param forceCheck: Se true, verifica a validade por suas colunas
  */
-bool Solucao::checkValidade(bool forceCheck = false)
+bool
+Solucao::checkValidade(bool forceCheck = false)
 {
     if(forceCheck)
     {
@@ -98,3 +112,35 @@ bool Solucao::checkValidade(bool forceCheck = false)
 }
 
 
+/**
+  * Elimina redundancias da solucao selecionando a partir da coluna
+  * mais pesada
+ **/
+void
+Solucao::eliminarRedundancia()
+{
+    ColunaSet T(colunas);
+
+    while(!T.empty()){
+        Coluna* j = Coluna::getColunas()[*T.first()];
+        T.erase(T.first());
+
+        bool isRedundante = false;
+
+        for(auto linha : j->getLinhas()){
+            if(coberturaLinhas[linha] < 2){
+                isRedundante = true;
+                break;
+            }
+        }
+
+        if(isRedundante){
+            auto colunaIt = std::find(colunas.first(), colunas.last(), j->getId());
+            colunas.erase(colunaIt);
+
+            for(auto linha : j->getLinhas()){
+                coberturaLinhas[linha]--;
+            }
+        }
+    }
+}
