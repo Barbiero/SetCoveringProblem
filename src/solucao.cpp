@@ -36,9 +36,9 @@ struct coluna_compare {
 
         return (right->getCusto() - left->getCusto());
     }
-}
+};
 
-typedef std::set<uint16_t, coluna_compare> ColunaSet
+typedef std::set<uint16_t, coluna_compare> ColunaSet;
 
 class Solucao
 {
@@ -49,6 +49,8 @@ public:
     bool checkValidade(bool forceCheck);
 
     bool valida() { return isValid; }
+
+    void eliminarRedundancia();
 
 private:
 
@@ -122,20 +124,20 @@ Solucao::eliminarRedundancia()
     ColunaSet T(colunas);
 
     while(!T.empty()){
-        Coluna* j = Coluna::getColunas()[*T.first()];
-        T.erase(T.first());
+        Coluna* j = Coluna::getColunas()[*(T.begin())];
+        T.erase(T.begin());
 
-        bool isRedundante = false;
+        bool isRedundante = true;
 
         for(auto linha : j->getLinhas()){
             if(coberturaLinhas[linha] < 2){
-                isRedundante = true;
+                isRedundante = false;
                 break;
             }
         }
 
         if(isRedundante){
-            auto colunaIt = std::find(colunas.first(), colunas.last(), j->getId());
+            auto colunaIt = colunas.find(j->getId());
             colunas.erase(colunaIt);
 
             for(auto linha : j->getLinhas()){

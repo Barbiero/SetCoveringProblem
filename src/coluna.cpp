@@ -70,7 +70,7 @@ Coluna::getCoberturaLinhas()
 std::set<Coluna*>
 Coluna::getColunasCobrindoLinha(uint8_t linha)
 {
-    std::set<Coluna*> conj_cols();
+    std::set<Coluna*> conj_cols;
     std::pair<CoberturaLinhas::iterator, CoberturaLinhas::iterator>
         cobertura_range = getCoberturaLinhas().equal_range(linha);
 
@@ -82,4 +82,4 @@ Coluna::getColunasCobrindoLinha(uint8_t linha)
     }
 
     return conj_cols;
-}git
+}

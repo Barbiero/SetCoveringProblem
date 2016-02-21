@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <unordered_set>
 #include <map>
+#include <set>
 
 #include <iostream>
 
@@ -31,7 +32,7 @@ public:
 
     static CoberturaLinhas& getCoberturaLinhas();
 
-    static std::set<Coluna*> Coluna::getColunasCobrindoLinha(uint8_t linha);
+    static std::set<Coluna*> getColunasCobrindoLinha(uint8_t linha);
 
 private:
 

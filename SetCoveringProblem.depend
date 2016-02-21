@@ -16,3 +16,25 @@
 	<map>
 	<iostream>
 
+1456078453 source:c:\users\pedro\workspace\setcoveringproblem\src\coluna.cpp
+	"coluna.h"
+
+1456078352 c:\users\pedro\workspace\setcoveringproblem\src\coluna.h
+	<cstdint>
+	<unordered_set>
+	<map>
+	<set>
+	<iostream>
+
+1456078027 source:c:\users\pedro\workspace\setcoveringproblem\src\iocoluna.cpp
+	<fstream>
+	<string>
+	<sstream>
+	<iostream>
+	"globals.h"
+	"coluna.h"
+
+1456078027 c:\users\pedro\workspace\setcoveringproblem\src\globals.h
+	<cstdint>
+	<cassert>
+
