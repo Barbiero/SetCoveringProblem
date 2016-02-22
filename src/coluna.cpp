@@ -1,5 +1,5 @@
 ///////////////////
-// Aquivo de definir coluna
+// Arquivo de definir coluna
 //////////////////
 
 #include "coluna.h"

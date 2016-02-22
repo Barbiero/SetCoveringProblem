@@ -1,19 +1,22 @@
 # depslib dependency file v1.0
-1454417193 source:/home/badashi/workspace/MOA/SetCoveringProblem/src/ioColuna.cpp
+1456148465 source:/home/badashi/workspace/MOA/SetCoveringProblem/src/ioColuna.cpp
 	<fstream>
 	<string>
 	<sstream>
 	<iostream>
 	"globals.h"
 	"coluna.h"
+	"solucao.h"
 
-1454416792 /home/badashi/workspace/MOA/SetCoveringProblem/src/globals.h
+1456149074 /home/badashi/workspace/MOA/SetCoveringProblem/src/globals.h
 	<cstdint>
+	<cassert>
 
-1454416179 /home/badashi/workspace/MOA/SetCoveringProblem/src/coluna.h
+1456142328 /home/badashi/workspace/MOA/SetCoveringProblem/src/coluna.h
 	<cstdint>
 	<unordered_set>
 	<map>
+	<set>
 	<iostream>
 
 1456078453 source:c:\users\pedro\workspace\setcoveringproblem\src\coluna.cpp
@@ -37,4 +40,17 @@
 1456078027 c:\users\pedro\workspace\setcoveringproblem\src\globals.h
 	<cstdint>
 	<cassert>
+
+1456143017 source:/home/badashi/workspace/MOA/SetCoveringProblem/src/coluna.cpp
+	"coluna.h"
+
+1456147378 /home/badashi/workspace/MOA/SetCoveringProblem/src/solucao.h
+	<vector>
+	<unordered_set>
+	<set>
+	"globals.h"
+	"coluna.h"
+
+1456144376 source:/home/badashi/workspace/MOA/SetCoveringProblem/src/solucao.cpp
+	"solucao.h"
 

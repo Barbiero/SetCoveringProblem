@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <iostream>
 #include "globals.h"
 #include "coluna.h"
+#include "solucao.h"
 
 uint8_t NUMERO_LINHAS;
 uint16_t NUMERO_COLUNAS;
@@ -41,7 +43,7 @@ int readLinhas(std::string filename)
         if(id_coluna <= 0 || id_coluna > num_colunas) continue;
         int linha_id;
         while(linhaStream >> linha_id){
-            linhas.insert(linha_id);
+            linhas.insert(linha_id-1);
         }
 
         Coluna* c = new Coluna(id_coluna, custo, linhas);
@@ -60,7 +62,26 @@ int main(int argv, char* argc[])
 
 
     readLinhas(argc[1]);
-    std::cout << (int)NUMERO_LINHAS << " " << (int)NUMERO_COLUNAS << std::endl;
+
+    try{
+        std::unordered_set<Solucao*> sol_ini = Solucao::gerarSolucoesIniciais(100);
+
+        auto min_max =
+            std::minmax_element(sol_ini.begin(), sol_ini.end(),
+                [](Solucao* fst, Solucao* snd) -> bool{
+                    return (fst->calcularCusto() < snd->calcularCusto());
+                }
+            );
+        std::cout << "Menor peso: " << (*(min_max.first))->calcularCusto()
+                  << " Maior peso: " << (*(min_max.second))->calcularCusto() << std::endl;
+
+
+    }
+    catch(const char* e){
+        std::cerr << e << std::endl;
+    }
+
+    std::cout << std::endl;
 
     return 0;
 }

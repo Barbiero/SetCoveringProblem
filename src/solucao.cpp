@@ -20,57 +20,11 @@
  *
  */
 
-#include <vector>
-#include <unordered_set>
-#include "globals.h"
-#include "coluna.h"
+#include <algorithm>
+#include <random>
+#include "solucao.h"
 
-struct coluna_compare {
-    bool operator() (const uint8_t& lhs, const uint8_t& rhs)
-    {
-        assert(lhs <= NUMERO_COLUNAS);
-        assert(rhs <= NUMERO_COLUNAS);
-
-        Coluna* left = Coluna::getColunas()[lhs];
-        Coluna* right = Coluna::getColunas()[rhs];
-
-        return (right->getCusto() - left->getCusto());
-    }
-};
-
-typedef std::set<uint16_t, coluna_compare> ColunaSet;
-
-class Solucao
-{
-public:
-
-    Solucao();
-
-    bool checkValidade(bool forceCheck);
-
-    bool valida() { return isValid; }
-
-    void eliminarRedundancia();
-
-private:
-
-    /**
-     * marca se uma solucao é valida
-     */
-    bool isValid;
-
-    /**
-     * marca quantas colunas estao cobrindo uma certa linha
-     */
-    std::vector<uint8_t> coberturaLinhas;
-
-    /**
-     * marca quais colunas fazem parte da solucao
-     * marca apenas o ID das colunas
-     */
-    ColunaSet colunas;
-
-};
+unsigned RANDOM_SEED = 28;
 
 Solucao::Solucao() :
     isValid(false), coberturaLinhas(std::vector<uint8_t>(NUMERO_LINHAS)),
@@ -122,14 +76,16 @@ void
 Solucao::eliminarRedundancia()
 {
     ColunaSet T(colunas);
-
     while(!T.empty()){
-        Coluna* j = Coluna::getColunas()[*(T.begin())];
+
+        uint16_t id = *(T.begin());
+
+        Coluna* j = Coluna::getColunas()[id];
         T.erase(T.begin());
 
         bool isRedundante = true;
-
-        for(auto linha : j->getLinhas()){
+        for(uint8_t linha : j->getLinhas())
+        {
             if(coberturaLinhas[linha] < 2){
                 isRedundante = false;
                 break;
@@ -137,12 +93,88 @@ Solucao::eliminarRedundancia()
         }
 
         if(isRedundante){
-            auto colunaIt = colunas.find(j->getId());
-            colunas.erase(colunaIt);
-
-            for(auto linha : j->getLinhas()){
+            for(uint8_t linha : j->getLinhas())
+            {
                 coberturaLinhas[linha]--;
             }
+
+            colunas.erase(id);
+        }
+
+    }
+}
+
+double
+Solucao::calcularCusto()
+{
+    double result = 0.0;
+    for_each(colunas.begin(), colunas.end(),
+        [&result](uint16_t elem)
+        {
+            Coluna* i = Coluna::getColunas()[elem];
+            result += i->getCusto();
+        });
+
+    return result;
+}
+
+/**
+  * @param seed: semente de geracao aleatoria para criar a solução
+  * @return Solucao*: uma Solucao aleatoria gerada a partir das colunas existentes
+  * @throw string: se uma solucao nao for possivel de ser gerada
+ **/
+
+Solucao*
+Solucao::gerarSolucaoAleatoria(unsigned seed)
+{
+    //Pegar as colunas mais pesadas e gerar uma solução a partir dessas
+    //Depois eliminar redundancias que existam
+
+    //Nao eh muito eficiente mas essa funcao deveria ser chamada apenas 1x
+
+    Solucao* s = new Solucao();
+    std::vector<uint16_t> coluna_copy;
+    for(auto it : Coluna::getColunas())
+    {
+        coluna_copy.push_back(it.first);
+    }
+
+    std::shuffle(coluna_copy.begin(), coluna_copy.end(), std::default_random_engine(seed));
+
+    for(auto it : coluna_copy)
+    {
+        s->colunas.insert(it);
+        if(s->checkValidade(true)){
+            s->eliminarRedundancia();
+            break;
         }
     }
+
+    if(!s->valida()){
+        delete s;
+        throw "Não foi possível gerar uma solução válida das colunas existentes";
+        return nullptr;
+    }
+
+    return s;
+}
+
+/**
+  * @param n: numero de solucoes a serem criadas
+  * @return std::set<Solucao*>: conjunto de solucoes geradas aleatoriamente
+**/
+std::unordered_set<Solucao*>
+Solucao::gerarSolucoesIniciais(uint8_t n)
+{
+    std::unordered_set<Solucao*> sol_iniciais;
+    unsigned seed = RANDOM_SEED;
+    for(int i = 0; i < n; i++)
+    {
+        Solucao* s = gerarSolucaoAleatoria(seed);
+        seed++;
+
+        sol_iniciais.insert(s);
+    }
+
+    return sol_iniciais;
 }
