@@ -6,6 +6,18 @@
 #include "globals.h"
 #include "coluna.h"
 
+class Solucao;
+struct solucomp;
+
+typedef std::multiset<Solucao*, solucomp> Populacao;
+
+
+/**
+  * Comparador de colunas
+  * Se duas colunas possuem custo igual,
+  * compara o ID das colunas
+  * isto porque std::set nao admite dois elementos equivalentes
+  */
 struct coluna_compare {
     bool operator() (const uint16_t& lhs, const uint16_t& rhs)
     {
@@ -15,7 +27,9 @@ struct coluna_compare {
         Coluna* left = Coluna::getColunas()[lhs];
         Coluna* right = Coluna::getColunas()[rhs];
 
-        return (right->getCustoPorLinhas() - left->getCustoPorLinhas());
+        return (left->getCustoPorLinhas() < right->getCustoPorLinhas())
+         || (left->getCustoPorLinhas() == right->getCustoPorLinhas()
+            && lhs < rhs);
     }
 };
 
@@ -44,13 +58,15 @@ public:
 
     double getCusto() { return custoTotal; }
 
+    double getCusto() const { return custoTotal; }
+
     void mutarSolucao();
 
     static Solucao* gerarSolucaoAleatoria(unsigned seed);
 
-    static std::unordered_set<Solucao*> gerarPopulacaoInicial(uint8_t n);
+    static Populacao gerarPopulacaoInicial(size_t n);
 
-    static Solucao* selecaoPorTorneio(std::unordered_set<Solucao*>& populacao, int k);
+    static Solucao* selecaoPorTorneio(Populacao& populacao, int k);
 
 private:
 
@@ -78,5 +94,8 @@ private:
 
 };
 
-typedef std::unordered_set<Solucao*> Populacao;
-
+struct solucomp {
+    bool operator()(const Solucao* lhs, const Solucao* rhs){
+        return lhs->getCusto() < rhs->getCusto();
+    }
+};

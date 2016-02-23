@@ -18,10 +18,7 @@ public:
     Coluna(uint16_t _id, double _custo, LinhaSet _linhas);
     uint16_t getId();
     double getCusto();
-    double getCustoPorLinhas()
-    {
-        return (getCusto() / linhas.size());
-    }
+    double getCustoPorLinhas();
 
     bool cobreLinha(uint8_t linha);
 

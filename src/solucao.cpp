@@ -25,8 +25,6 @@
 #include <random>
 #include "solucao.h"
 
-unsigned RANDOM_SEED = 28+0xdeadbeef;
-
 Solucao::Solucao() :
     isValid(false), coberturaLinhas(std::vector<uint8_t>(NUMERO_LINHAS)),
     colunas(ColunaSet()), custoTotal(0.0)
@@ -194,8 +192,8 @@ Solucao::mutarSolucao()
 {
     unsigned seed = RANDOM_SEED + 20;
 
-    std::default_random_engine gerador(seed);
-    std::uniform_real_distribution<double> dist_double(0.0, 0.10);
+    static std::default_random_engine gerador(seed);
+    static std::uniform_real_distribution<double> dist_double(0.0, 1.0);
 
     double lambda = dist_double(gerador);
 
@@ -213,11 +211,11 @@ Solucao::mutarSolucao()
   * @return std::set<Solucao*>: conjunto de solucoes geradas aleatoriamente
 **/
 Populacao
-Solucao::gerarPopulacaoInicial(uint8_t n)
+Solucao::gerarPopulacaoInicial(size_t n)
 {
-    std::unordered_set<Solucao*> sol_iniciais;
+    Populacao sol_iniciais;
     unsigned seed = RANDOM_SEED;
-    for(int i = 0; i < n; i++)
+    for(size_t i = 0; i < n; i++)
     {
         Solucao* s = gerarSolucaoAleatoria(seed);
         seed++;
@@ -241,8 +239,8 @@ Solucao::selecaoPorTorneio(Populacao& populacao, int k)
     seed += 10; //uma mudada fixa apenas para nao usar a mesma seed
 
     //gerador de numero aleatorio
-    std::default_random_engine gerador(seed);
-    std::uniform_int_distribution<int> distribution(0, populacao.size()-1);
+    static std::default_random_engine gerador(seed);
+    static std::uniform_int_distribution<int> distribution(0, populacao.size()-1);
 
     Solucao* vencedor = nullptr;
 
@@ -253,11 +251,17 @@ Solucao::selecaoPorTorneio(Populacao& populacao, int k)
         std::advance(elem_it, delta_index);
 
         Solucao* sol_selecionada = (*elem_it);
+
+        //std::cout << (uintptr_t)(*populacao.begin()) << " ";
+        //std::cout << "+" << delta_index << " = ";
+        //std::cout << (uintptr_t)(*elem_it) << "\n";
         if(vencedor == nullptr){
             vencedor = sol_selecionada;
         }
         else{
-            if(sol_selecionada->getCusto() < vencedor->getCusto()){
+            double c1 = sol_selecionada->getCusto();
+            double c2 = vencedor->getCusto();
+            if(c1 < c2){
                 vencedor = sol_selecionada;
             }
         }

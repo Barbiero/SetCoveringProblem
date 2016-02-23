@@ -16,15 +16,13 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-Weffc++" />
-			<Add option="-Wextra" />
-			<Add option="-Wall" />
 			<Add option="-std=c++14" />
+			<Add option="-g" />
 		</Compiler>
 		<Unit filename="src/coluna.cpp" />
 		<Unit filename="src/coluna.h" />
 		<Unit filename="src/globals.h" />
-		<Unit filename="src/ioColuna.cpp" />
+		<Unit filename="src/main.cpp" />
 		<Unit filename="src/solucao.cpp" />
 		<Unit filename="src/solucao.h" />
 		<Extensions>

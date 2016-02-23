@@ -24,6 +24,12 @@ Coluna::getCusto()
     return custo;
 }
 
+double
+Coluna::getCustoPorLinhas()
+{
+    return (custo / linhas.size());
+}
+
 const LinhaSet&
 Coluna::getLinhas()
 {
@@ -92,7 +98,7 @@ Coluna::selecionarColunaAleatoria()
     unsigned seed = RANDOM_SEED;
 
     static std::default_random_engine gerador(seed);
-    std::uniform_int_distribution<uint16_t> dis(1, NUMERO_COLUNAS);
+    static std::uniform_int_distribution<uint16_t> dis(1, NUMERO_COLUNAS);
 
     uint16_t index = dis(gerador);
     return getColunas()[index];
