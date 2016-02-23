@@ -15,7 +15,7 @@ struct coluna_compare {
         Coluna* left = Coluna::getColunas()[lhs];
         Coluna* right = Coluna::getColunas()[rhs];
 
-        return (right->getCusto() - left->getCusto());
+        return (right->getCustoPorLinhas() - left->getCustoPorLinhas());
     }
 };
 
@@ -26,6 +26,8 @@ class Solucao
 public:
 
     Solucao();
+
+    Solucao(Solucao* a, Solucao* b);
 
     bool checkValidade(bool forceCheck);
 
@@ -40,11 +42,15 @@ public:
 
     double calcularCusto();
 
+    double getCusto() { return custoTotal; }
+
+    void mutarSolucao();
+
     static Solucao* gerarSolucaoAleatoria(unsigned seed);
 
-    static std::unordered_set<Solucao*> gerarSolucoesIniciais(uint8_t n);
+    static std::unordered_set<Solucao*> gerarPopulacaoInicial(uint8_t n);
 
-
+    static Solucao* selecaoPorTorneio(std::unordered_set<Solucao*>& populacao, int k);
 
 private:
 
@@ -64,5 +70,13 @@ private:
      */
     ColunaSet colunas;
 
+
+    /**
+     * Soma do custo de todas as colunas
+     */
+    double custoTotal;
+
 };
+
+typedef std::unordered_set<Solucao*> Populacao;
 

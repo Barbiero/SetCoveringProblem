@@ -4,7 +4,6 @@
 #include <unordered_set>
 #include <map>
 #include <set>
-
 #include <iostream>
 
 typedef std::unordered_set<uint8_t> LinhaSet;
@@ -19,6 +18,10 @@ public:
     Coluna(uint16_t _id, double _custo, LinhaSet _linhas);
     uint16_t getId();
     double getCusto();
+    double getCustoPorLinhas()
+    {
+        return (getCusto() / linhas.size());
+    }
 
     bool cobreLinha(uint8_t linha);
 
@@ -33,6 +36,8 @@ public:
     static CoberturaLinhas& getCoberturaLinhas();
 
     static std::set<Coluna*> getColunasCobrindoLinha(uint8_t linha);
+
+    static Coluna* selecionarColunaAleatoria();
 
 private:
 

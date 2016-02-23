@@ -55,27 +55,47 @@ int readLinhas(std::string filename)
 
 int main(int argv, char* argc[])
 {
+    std::string filename;
     if(argv < 2){
-        std::cout << "Digite o nome do arquivo" << std::endl;
-        return 0;
+        //std::cout << "Digite o nome do arquivo" << std::endl;
+        //return 0;
+        filename = "casos/teste1.txt";
+    }
+    else{
+        filename = argc[1];
     }
 
 
-    readLinhas(argc[1]);
+    readLinhas(filename);
 
     try{
-        std::unordered_set<Solucao*> sol_ini = Solucao::gerarSolucoesIniciais(100);
+        Populacao sol_ini = Solucao::gerarPopulacaoInicial(100);
 
         auto min_max =
             std::minmax_element(sol_ini.begin(), sol_ini.end(),
                 [](Solucao* fst, Solucao* snd) -> bool{
-                    return (fst->calcularCusto() < snd->calcularCusto());
-                }
-            );
-        std::cout << "Menor peso: " << (*(min_max.first))->calcularCusto()
-                  << " Maior peso: " << (*(min_max.second))->calcularCusto() << std::endl;
+                    return (fst->getCusto() < snd->getCusto());
+                });
+
+        std::cout << "Menor peso: " << (*(min_max.first))->getCusto()
+                  << " Maior peso: " << (*(min_max.second))->getCusto() << std::endl;;
+
+        //selecionar elemento aleatoriamente
+        Solucao* sel_por_torneio = Solucao::selecaoPorTorneio(sol_ini, 2);
+        std::cout << "Custo da solucao selecionada: " << sel_por_torneio->getCusto() << std::endl;
+
+        //Criar um cruzamento entre a selecionada por torneio e a menor solucao conhecida
+        Solucao* cruzamento = new Solucao(sel_por_torneio, (*(min_max.first)));
+        sol_ini.insert(cruzamento);
+
+        std::cout << "Custo do cruzamento: " << cruzamento->getCusto() << std::endl;
+        cruzamento->mutarSolucao();
+
+        std::cout << "Cruzamento pos mutação: " << cruzamento->getCusto() << std::endl;
 
 
+        //deletar populacao gerada após termino do uso
+        sol_ini.clear();
     }
     catch(const char* e){
         std::cerr << e << std::endl;

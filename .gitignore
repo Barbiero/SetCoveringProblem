@@ -27,6 +27,7 @@
 *.out
 *.app
 alggen
+SetCoveringProblem
 
 #codeblocks project layout
 *.layout

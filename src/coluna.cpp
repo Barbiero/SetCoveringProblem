@@ -2,7 +2,9 @@
 // Arquivo de definir coluna
 //////////////////
 
+#include <random>
 #include "coluna.h"
+#include "globals.h"
 
 typedef std::map<uint16_t, Coluna*> ColunaArray;
 
@@ -82,4 +84,16 @@ Coluna::getColunasCobrindoLinha(uint8_t linha)
     }
 
     return conj_cols;
+}
+
+Coluna*
+Coluna::selecionarColunaAleatoria()
+{
+    unsigned seed = RANDOM_SEED;
+
+    static std::default_random_engine gerador(seed);
+    std::uniform_int_distribution<uint16_t> dis(1, NUMERO_COLUNAS);
+
+    uint16_t index = dis(gerador);
+    return getColunas()[index];
 }

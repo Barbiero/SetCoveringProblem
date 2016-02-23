@@ -21,15 +21,39 @@
  */
 
 #include <algorithm>
+#include <iterator>
 #include <random>
 #include "solucao.h"
 
-unsigned RANDOM_SEED = 28;
+unsigned RANDOM_SEED = 28+0xdeadbeef;
 
 Solucao::Solucao() :
     isValid(false), coberturaLinhas(std::vector<uint8_t>(NUMERO_LINHAS)),
-    colunas(ColunaSet())
+    colunas(ColunaSet()), custoTotal(0.0)
 {}
+
+/**
+    * Cria uma Solucao a partir de outras duas solucoes
+  */
+Solucao::Solucao(Solucao* a, Solucao* b) :
+    isValid(false), coberturaLinhas(std::vector<uint8_t>(NUMERO_LINHAS)),
+    colunas(ColunaSet()), custoTotal(0.0)
+{
+
+    for(auto coluna : a->getListaColunas())
+    {
+        colunas.insert(coluna);
+    }
+
+    for(auto coluna : b->getListaColunas())
+    {
+        colunas.insert(coluna);
+    }
+
+    if(checkValidade(true)){
+        eliminarRedundancia();
+    }
+}
 
 /**
  * verifica a validade de uma solucao e retorna true se ela for valida
@@ -52,6 +76,7 @@ Solucao::checkValidade(bool forceCheck = false)
                 coberturaLinhas[linha]++;
             }
         }
+        calcularCusto();
     }
 
     for(auto linha : coberturaLinhas)
@@ -100,22 +125,24 @@ Solucao::eliminarRedundancia()
 
             colunas.erase(id);
         }
-
     }
+    calcularCusto();
 }
 
 double
 Solucao::calcularCusto()
 {
-    double result = 0.0;
-    for_each(colunas.begin(), colunas.end(),
-        [&result](uint16_t elem)
+    double custo = 0.0;
+    std::for_each(colunas.begin(), colunas.end(),
+        [&custo](uint16_t colid)
         {
-            Coluna* i = Coluna::getColunas()[elem];
-            result += i->getCusto();
-        });
+            Coluna* c = Coluna::getColunas()[colid];
+            custo += c->getCusto();
+        }
+    );
 
-    return result;
+    custoTotal = custo;
+    return custoTotal;
 }
 
 /**
@@ -160,11 +187,33 @@ Solucao::gerarSolucaoAleatoria(unsigned seed)
 }
 
 /**
+  * Muta uma solucao aleatoriamente
+  */
+void
+Solucao::mutarSolucao()
+{
+    unsigned seed = RANDOM_SEED + 20;
+
+    std::default_random_engine gerador(seed);
+    std::uniform_real_distribution<double> dist_double(0.0, 0.10);
+
+    double lambda = dist_double(gerador);
+
+    int itermax = (int)(lambda * colunas.size());
+    for(int k = 0; k < itermax; k++)
+    {
+        Coluna* j = Coluna::selecionarColunaAleatoria();
+        colunas.insert(j->getId());
+    }
+    eliminarRedundancia();
+}
+
+/**
   * @param n: numero de solucoes a serem criadas
   * @return std::set<Solucao*>: conjunto de solucoes geradas aleatoriamente
 **/
-std::unordered_set<Solucao*>
-Solucao::gerarSolucoesIniciais(uint8_t n)
+Populacao
+Solucao::gerarPopulacaoInicial(uint8_t n)
 {
     std::unordered_set<Solucao*> sol_iniciais;
     unsigned seed = RANDOM_SEED;
@@ -178,3 +227,42 @@ Solucao::gerarSolucoesIniciais(uint8_t n)
 
     return sol_iniciais;
 }
+
+/**
+    * Seleciona o melhor elemento entre k elementos aleatorios
+    * @param populacao: A populacao de elementos a ser pesquisada
+    * @param k: numero de elementos aleatorios a serem testados
+    * @return Solucao*
+  */
+Solucao*
+Solucao::selecaoPorTorneio(Populacao& populacao, int k)
+{
+    unsigned seed = RANDOM_SEED;
+    seed += 10; //uma mudada fixa apenas para nao usar a mesma seed
+
+    //gerador de numero aleatorio
+    std::default_random_engine gerador(seed);
+    std::uniform_int_distribution<int> distribution(0, populacao.size()-1);
+
+    Solucao* vencedor = nullptr;
+
+    for(; k > 0; k--)
+    {
+        Populacao::iterator elem_it = populacao.begin();
+        int delta_index = distribution(gerador);
+        std::advance(elem_it, delta_index);
+
+        Solucao* sol_selecionada = (*elem_it);
+        if(vencedor == nullptr){
+            vencedor = sol_selecionada;
+        }
+        else{
+            if(sol_selecionada->getCusto() < vencedor->getCusto()){
+                vencedor = sol_selecionada;
+            }
+        }
+    }
+
+    return vencedor;
+}
+
