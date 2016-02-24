@@ -16,10 +16,10 @@ unsigned RANDOM_SEED;
 
 
 //uint32_t TEMPO_MAX = 2000000;
-double SEGUNDOS_ESPERANDO = 2.0
+double SEGUNDOS_ESPERANDO = 2.0;
 size_t POPULACAO_SIZE = 100;
 double TAXA_MIN_MUTACAO = 0.05;
-int SELECAO_POR_TORNEIO = 4;
+int SELECAO_POR_TORNEIO = 5;
 
 int readLinhas(std::string filename)
 {
@@ -83,7 +83,7 @@ taxa_de_mutacao(Solucao* menos_apto, Solucao* mais_apto, double tx_minima = TAXA
 
 double rand_zero_um()
 {
-    unsigned seed = RANDOM_SEED + 0xF0A4BC19;
+    unsigned seed = RANDOM_SEED;
 
     static std::default_random_engine gerador(seed);
     static std::uniform_real_distribution<double> dist_double(0.0, 1.0);
@@ -124,28 +124,42 @@ busca_algoritmo_genetico()
             S->mutarSolucao();
         }
 
-        //nao queremos elementos repetidos
-        auto iter = std::find_if(pop.begin(), pop.end(),
-                              [S](Solucao* elem)
-                              {
-                                  return ((*elem) == (*S));
-                              });
+        if(S->getCusto() < menos_apto->getCusto()){
 
-        if(iter == pop.end() && S->getCusto() < menos_apto->getCusto()){
+            bool isCopy = false;
+            auto range_custo = pop.equal_range(S);
+            if(range_custo.first != pop.end())
+            {
+                for(auto it = range_custo.first; it != range_custo.second;
+                ++it)
+                {
+                    Solucao* cmp = (*it);
+                    if(cmp->getListaColunas() == S->getListaColunas())
+                    {
+                        isCopy = true;
+                        break;
+                    }
+                }
+            }
 
-            Populacao::iterator it = pop.end();
-            --it;
-            delete *it;
-            pop.erase(it);
+            if(!isCopy){
+                Populacao::iterator it = pop.end();
+                --it;
+                delete *it;
+                pop.erase(it);
 
-            pop.insert(S);
+                pop.insert(S);
 
-            auto diff_ms = std::chrono::duration_cast<ms>((dsec)(Clock::now() - t));
+                auto diff_ms = std::chrono::duration_cast<ms>((dsec)(Clock::now() - t));
 
-            std::cout << "Nova Solucao: " << S->getCusto() << " após " << diff_ms.count() << "μs" << std::endl;
+                std::cout << "Nova Solucao: " << S->getCusto() << " após " << diff_ms.count() << "μs" << std::endl;
 
-            //tempo = 0;
-            t = Clock::now();
+                //tempo = 0;
+                t = Clock::now();
+            }
+            else{
+                delete S;
+            }
         }
         else{
             /*tempo += 1;
@@ -203,12 +217,12 @@ int main(int argv, char* argc[])
     for(uint16_t c : res->getListaColunas() )
     {
         Coluna* col = Coluna::getColunas()[c];
-        std::cout << (int)col->getId()+1 << " => ";
+        std::cout << (int)col->getId() << " => ";
         for(uint8_t linha : col->getLinhas())
         {
-            std::cout << (int)linha << " ";
+            std::cout << (int)linha+1 << " ";
         }
-        std::cout << std::endl;
+        std::cout << "(" << col->getCusto() << ")" << std::endl;
     }
 
     return 0;

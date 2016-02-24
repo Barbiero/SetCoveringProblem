@@ -69,15 +69,7 @@ public:
 
     static Solucao* selecaoPorTorneio(Populacao& populacao, int k);
 
-    bool operator==(const Solucao& other)
-    {
-        for(auto l : getListaColunas()){
-            for(auto r: other.getListaColunas()){
-                if(l != r) return false;
-            }
-        }
-        return true;
-    }
+
 private:
 
     /**

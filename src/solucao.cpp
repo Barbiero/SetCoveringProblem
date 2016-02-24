@@ -101,10 +101,11 @@ Solucao::eliminarRedundancia()
     ColunaSet T(colunas);
     while(!T.empty()){
 
-        uint16_t id = *(T.begin());
+        auto iter = T.end(); --iter;
+        uint16_t id = *(iter);
 
         Coluna* j = Coluna::getColunas()[id];
-        T.erase(T.begin());
+        T.erase(id);
 
         bool isRedundante = true;
         for(uint8_t linha : j->getLinhas())
@@ -144,6 +145,28 @@ Solucao::calcularCusto()
 }
 
 /**
+  * Muta uma solucao aleatoriamente
+  */
+void
+Solucao::mutarSolucao()
+{
+    unsigned seed = RANDOM_SEED;
+
+    static std::default_random_engine gerador(seed);
+    static std::uniform_real_distribution<double> dist_double(0.0, 1.0);
+
+    double lambda = dist_double(gerador);
+
+    int itermax = (int)(lambda * colunas.size());
+    for(int k = 0; k < itermax; k++)
+    {
+        Coluna* j = Coluna::selecionarColunaAleatoria();
+        colunas.insert(j->getId());
+    }
+    eliminarRedundancia();
+}
+
+/**
   * @param seed: semente de geracao aleatoria para criar a solução
   * @return Solucao*: uma Solucao aleatoria gerada a partir das colunas existentes
   * @throw string: se uma solucao nao for possivel de ser gerada
@@ -177,28 +200,6 @@ Solucao::gerarSolucaoAleatoria(unsigned seed)
 }
 
 /**
-  * Muta uma solucao aleatoriamente
-  */
-void
-Solucao::mutarSolucao()
-{
-    unsigned seed = RANDOM_SEED + 20;
-
-    static std::default_random_engine gerador(seed);
-    static std::uniform_real_distribution<double> dist_double(0.0, 1.0);
-
-    double lambda = dist_double(gerador);
-
-    int itermax = (int)(lambda * colunas.size());
-    for(int k = 0; k < itermax; k++)
-    {
-        Coluna* j = Coluna::selecionarColunaAleatoria();
-        colunas.insert(j->getId());
-    }
-    eliminarRedundancia();
-}
-
-/**
   * @param n: numero de solucoes a serem criadas
   * @return std::set<Solucao*>: conjunto de solucoes geradas aleatoriamente
 **/
@@ -229,7 +230,6 @@ Solucao*
 Solucao::selecaoPorTorneio(Populacao& populacao, int k)
 {
     unsigned seed = RANDOM_SEED;
-    seed += 10; //uma mudada fixa apenas para nao usar a mesma seed
 
     //gerador de numero aleatorio
     static std::default_random_engine gerador(seed);
