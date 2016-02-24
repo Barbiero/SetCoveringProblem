@@ -15,7 +15,8 @@ uint16_t NUMERO_COLUNAS;
 unsigned RANDOM_SEED;
 
 
-uint32_t TEMPO_MAX = 20000;
+//uint32_t TEMPO_MAX = 2000000;
+double SEGUNDOS_ESPERANDO = 2.0
 size_t POPULACAO_SIZE = 100;
 double TAXA_MIN_MUTACAO = 0.05;
 int SELECAO_POR_TORNEIO = 4;
@@ -96,7 +97,13 @@ busca_algoritmo_genetico()
     std::cout << "Gerando população inicial de " << POPULACAO_SIZE << " individuos..." << std::flush;
     Populacao pop = Solucao::gerarPopulacaoInicial(POPULACAO_SIZE);
     std::cout << "[pronto]" << std::endl;
-    uint32_t tempo = 0;
+    //uint32_t tempo = 0;
+
+
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::microseconds ms;
+    typedef std::chrono::duration<double> dsec;
+    auto t = Clock::now();
 
     auto cmp_sol = [](Solucao* fst, Solucao* snd) -> bool{
                     return (fst->getCusto() < snd->getCusto());
@@ -117,7 +124,15 @@ busca_algoritmo_genetico()
             S->mutarSolucao();
         }
 
-        if(S->getCusto() < menos_apto->getCusto()){
+        //nao queremos elementos repetidos
+        auto iter = std::find_if(pop.begin(), pop.end(),
+                              [S](Solucao* elem)
+                              {
+                                  return ((*elem) == (*S));
+                              });
+
+        if(iter == pop.end() && S->getCusto() < menos_apto->getCusto()){
+
             Populacao::iterator it = pop.end();
             --it;
             delete *it;
@@ -125,20 +140,30 @@ busca_algoritmo_genetico()
 
             pop.insert(S);
 
-            std::cout << "Nova Solucao na populacao: " << S->getCusto() << std::endl;
+            auto diff_ms = std::chrono::duration_cast<ms>((dsec)(Clock::now() - t));
 
-            tempo = 0;
+            std::cout << "Nova Solucao: " << S->getCusto() << " após " << diff_ms.count() << "μs" << std::endl;
+
+            //tempo = 0;
+            t = Clock::now();
         }
         else{
-            tempo += 1;
-            delete S;
+            /*tempo += 1;
 
-            if(tempo % 1000 == 0)
+            if(tempo % 100000 == 0)
             {
-                std::cout << "tempo: " << tempo << std::endl;
-            }
+                std::cout << "tempo: " << tempo << " custo desta iter: " << S->getCusto() << std::endl;
+            }*/
+
+
+            delete S;
         }
-    }while(tempo <= TEMPO_MAX);
+
+        auto diff_secs = std::chrono::duration_cast<std::chrono::seconds>((dsec)(Clock::now() - t));
+        if(diff_secs.count() > SEGUNDOS_ESPERANDO){
+            break;
+        }
+    }while(true);
 
 
     auto min_elem = std::min_element(pop.begin(), pop.end(), cmp_sol);

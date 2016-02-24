@@ -53,6 +53,7 @@ public:
         return colunas.insert(col); }
 
     const ColunaSet& getListaColunas() { return colunas; }
+    const ColunaSet& getListaColunas() const { return colunas; }
 
     double calcularCusto();
 
@@ -68,6 +69,15 @@ public:
 
     static Solucao* selecaoPorTorneio(Populacao& populacao, int k);
 
+    bool operator==(const Solucao& other)
+    {
+        for(auto l : getListaColunas()){
+            for(auto r: other.getListaColunas()){
+                if(l != r) return false;
+            }
+        }
+        return true;
+    }
 private:
 
     /**
