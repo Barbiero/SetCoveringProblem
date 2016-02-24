@@ -20,10 +20,12 @@
 	<set>
 	<iostream>
 
-1456078453 source:c:\users\pedro\workspace\setcoveringproblem\src\coluna.cpp
+1456270403 source:c:\users\pedro\workspace\setcoveringproblem\src\coluna.cpp
+	<random>
 	"coluna.h"
+	"globals.h"
 
-1456078352 c:\users\pedro\workspace\setcoveringproblem\src\coluna.h
+1456270403 c:\users\pedro\workspace\setcoveringproblem\src\coluna.h
 	<cstdint>
 	<unordered_set>
 	<map>
@@ -38,7 +40,7 @@
 	"globals.h"
 	"coluna.h"
 
-1456078027 c:\users\pedro\workspace\setcoveringproblem\src\globals.h
+1456152858 c:\users\pedro\workspace\setcoveringproblem\src\globals.h
 	<cstdint>
 	<cassert>
 
@@ -71,5 +73,31 @@
 	<memory>
 	"globals.h"
 	"coluna.h"
+	"solucao.h"
+
+1456272220 source:c:\users\pedro\workspace\setcoveringproblem\src\main.cpp
+	<algorithm>
+	<chrono>
+	<fstream>
+	<string>
+	<sstream>
+	<iostream>
+	<numeric>
+	<memory>
+	"globals.h"
+	"coluna.h"
+	"solucao.h"
+
+1456270403 c:\users\pedro\workspace\setcoveringproblem\src\solucao.h
+	<vector>
+	<unordered_set>
+	<set>
+	"globals.h"
+	"coluna.h"
+
+1456272827 source:c:\users\pedro\workspace\setcoveringproblem\src\solucao.cpp
+	<algorithm>
+	<iterator>
+	<random>
 	"solucao.h"
 

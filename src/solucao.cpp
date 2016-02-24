@@ -155,25 +155,17 @@ Solucao::gerarSolucaoAleatoria(unsigned seed)
     //Pegar as colunas mais pesadas e gerar uma solução a partir dessas
     //Depois eliminar redundancias que existam
 
-    //Nao eh muito eficiente mas essa funcao deveria ser chamada apenas 1x
+    //funcao bem lenta quando NUMERO_COLUNAS é grande
 
     Solucao* s = new Solucao();
-    std::vector<uint16_t> coluna_copy;
-    for(auto it : Coluna::getColunas())
-    {
-        coluna_copy.push_back(it.first);
-    }
+    std::default_random_engine eng(seed);
+    std::uniform_int_distribution<uint16_t> dist(1, NUMERO_COLUNAS);
+    while(!s->checkValidade(true)){
+        auto id = dist(eng);
 
-    std::shuffle(coluna_copy.begin(), coluna_copy.end(), std::default_random_engine(seed));
-
-    for(auto it : coluna_copy)
-    {
-        s->colunas.insert(it);
-        if(s->checkValidade(true)){
-            s->eliminarRedundancia();
-            break;
-        }
+        s->colunas.insert(id);
     }
+    s->eliminarRedundancia();
 
     if(!s->valida()){
         delete s;
@@ -221,6 +213,7 @@ Solucao::gerarPopulacaoInicial(size_t n)
         seed++;
 
         sol_iniciais.insert(s);
+        std::cout << i << " " << std::flush;
     }
 
     return sol_iniciais;
@@ -252,9 +245,6 @@ Solucao::selecaoPorTorneio(Populacao& populacao, int k)
 
         Solucao* sol_selecionada = (*elem_it);
 
-        //std::cout << (uintptr_t)(*populacao.begin()) << " ";
-        //std::cout << "+" << delta_index << " = ";
-        //std::cout << (uintptr_t)(*elem_it) << "\n";
         if(vencedor == nullptr){
             vencedor = sol_selecionada;
         }

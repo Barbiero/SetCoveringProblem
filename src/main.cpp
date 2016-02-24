@@ -15,7 +15,7 @@ uint16_t NUMERO_COLUNAS;
 unsigned RANDOM_SEED;
 
 
-uint32_t TEMPO_MAX = 2000;
+uint32_t TEMPO_MAX = 20000;
 size_t POPULACAO_SIZE = 100;
 double TAXA_MIN_MUTACAO = 0.05;
 int SELECAO_POR_TORNEIO = 4;
@@ -25,6 +25,11 @@ int readLinhas(std::string filename)
     std::string tmp;
     std::ifstream fin;
     fin.open(filename);
+    if(fin.fail())
+    {
+        std::cerr << "Nao foi possivel abrir o arquivo " << filename << std::endl;
+        return -1;
+    }
 
     //ler numero de linhas
     int num_linhas;
@@ -88,9 +93,9 @@ double rand_zero_um()
 std::unique_ptr<Solucao>
 busca_algoritmo_genetico()
 {
-    std::cout << "Gerando população inicial de " << POPULACAO_SIZE << " individuos...";
+    std::cout << "Gerando população inicial de " << POPULACAO_SIZE << " individuos..." << std::flush;
     Populacao pop = Solucao::gerarPopulacaoInicial(POPULACAO_SIZE);
-    std::cout << "[pronto]\n";
+    std::cout << "[pronto]" << std::endl;
     uint32_t tempo = 0;
 
     auto cmp_sol = [](Solucao* fst, Solucao* snd) -> bool{
@@ -102,13 +107,6 @@ busca_algoritmo_genetico()
         Solucao* Y = Solucao::selecaoPorTorneio(pop, SELECAO_POR_TORNEIO);
 
         Solucao* S = new Solucao(X, Y);
-
-        /*
-        auto min_max =
-            std::minmax_element(pop.begin(), pop.end(), cmp_sol);
-
-        Solucao* menos_apto = *(min_max.second);
-        Solucao* mais_apto = *(min_max.first);*/
 
         Solucao* menos_apto = *pop.rbegin();
         Solucao* mais_apto = *pop.begin();
@@ -127,7 +125,7 @@ busca_algoritmo_genetico()
 
             pop.insert(S);
 
-            std::cout << "Nova Solucao na populacao: " << S->getCusto() << "\n";
+            std::cout << "Nova Solucao na populacao: " << S->getCusto() << std::endl;
 
             tempo = 0;
         }
@@ -137,7 +135,7 @@ busca_algoritmo_genetico()
 
             if(tempo % 1000 == 0)
             {
-                std::cout << "tempo: " << tempo << "\n";
+                std::cout << "tempo: " << tempo << std::endl;
             }
         }
     }while(tempo <= TEMPO_MAX);
@@ -149,33 +147,34 @@ busca_algoritmo_genetico()
     return res;
 }
 
-
-
 int main(int argv, char* argc[])
 {
+    std::cout << "Programa de Algoritmo Genetico" << std::endl;
     RANDOM_SEED = std::chrono::system_clock::now().time_since_epoch().count();
 
     std::string filename;
     if(argv < 2){
         //std::cout << "Digite o nome do arquivo" << std::endl;
         //return 0;
-        filename = "casos/Wren_03.dat";
+        filename = "casos/teste1.txt";
     }
     else{
         filename = argc[1];
     }
 
-    std::cout << "Lendo arquivo " << filename << "\n";
-    readLinhas(filename);
+    std::cout << "Lendo arquivo " << filename << std::endl;
+    if(readLinhas(filename) < 0){
+        return -1;
+    }
 
-    std::cout << "Numero de linhas: " << (int)NUMERO_LINHAS << "\n";
-    std::cout << "Numero de colunas: " << (int)NUMERO_COLUNAS << "\n";
+    std::cout << "Numero de linhas: " << (int)NUMERO_LINHAS << std::endl;
+    std::cout << "Numero de colunas: " << (int)NUMERO_COLUNAS << std::endl;
 
 
     std::unique_ptr<Solucao> res = busca_algoritmo_genetico();
-    std::cout << "Tempo finalizado!\n"
-                << "Custo: " << res->getCusto() << "\n"
-                << "\nColunas:";
+    std::cout << "Tempo finalizado!" << std::endl
+                << "Custo: " << res->getCusto() << std::endl
+                << "\nColunas:" << std::flush;
     for(uint16_t c : res->getListaColunas() )
     {
         Coluna* col = Coluna::getColunas()[c];
@@ -184,9 +183,8 @@ int main(int argv, char* argc[])
         {
             std::cout << (int)linha << " ";
         }
-        std::cout << '\n';
+        std::cout << std::endl;
     }
-
 
     return 0;
 }
