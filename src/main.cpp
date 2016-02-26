@@ -20,6 +20,7 @@ double SEGUNDOS_ESPERANDO = 2.0;
 size_t POPULACAO_SIZE = 100;
 double TAXA_MIN_MUTACAO = 0.05;
 int SELECAO_POR_TORNEIO = 5;
+bool suppressInfo = false;
 
 int readLinhas(std::string filename)
 {
@@ -152,7 +153,8 @@ busca_algoritmo_genetico()
 
                 auto diff_ms = std::chrono::duration_cast<ms>((dsec)(Clock::now() - t));
 
-                std::cout << "Nova Solucao: " << S->getCusto() << " após " << diff_ms.count() << "μs" << std::endl;
+                if(!suppressInfo)
+                    std::cout << "Nova Solucao: " << S->getCusto() << " após " << diff_ms.count() << "μs" << std::endl;
 
                 //tempo = 0;
                 t = Clock::now();
@@ -199,6 +201,22 @@ int main(int argv, char* argc[])
     }
     else{
         filename = argc[1];
+    }
+
+    if(argv >= 3){
+        POPULACAO_SIZE = strtoul(argc[2], NULL, 10);
+    }
+
+    if(argv >= 4){
+        TAXA_MIN_MUTACAO = strtod(argc[3], NULL);
+    }
+
+    if(argv >= 5){
+        SEGUNDOS_ESPERANDO = strtod(argc[4], NULL);
+    }
+
+    if(argv >= 6){
+        suppressInfo = true;
     }
 
     std::cout << "Lendo arquivo " << filename << std::endl;
